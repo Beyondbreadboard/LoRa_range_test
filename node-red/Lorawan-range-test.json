@@ -1,0 +1,270 @@
+[
+    {
+        "id": "9c90e1ff.4d0ab",
+        "type": "tab",
+        "label": "LoRawan__range_test",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "2e5f4c63.c27a44",
+        "type": "mqtt in",
+        "z": "9c90e1ff.4d0ab",
+        "name": "Chirp_mqtt_connect",
+        "topic": "application/2/device/3cc1f60500023b46/event/up",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "d840887e.1530f",
+        "x": 330,
+        "y": 240,
+        "wires": [
+            [
+                "660303a0.54563c"
+            ]
+        ]
+    },
+    {
+        "id": "660303a0.54563c",
+        "type": "function",
+        "z": "9c90e1ff.4d0ab",
+        "name": "read_from_LoraWAN",
+        "func": "var uplink = JSON.parse(msg.payload);\nmsg.uplink = uplink;\n\nvar time = new Date();\nvar hours,min,sec;\nhours = time.getHours();\nmin = time.getMinutes();\nsec = time.getSeconds();\nmsg.time = hours.toString()+':'+min.toString()+':'+sec.toString();\nvar gps_data = new Buffer(uplink.data,'base64');\nmsg.only_gps = gps_data.toString();\nmsg.gps_data = gps_data.toString() + ',' + msg.time;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 600,
+        "y": 220,
+        "wires": [
+            [
+                "72922b09.cc5ad4",
+                "374da14f.f5bace"
+            ]
+        ]
+    },
+    {
+        "id": "9ce8a59b.1c1808",
+        "type": "file",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "filename": "C:\\Users\\rohit\\OneDrive\\Documents\\Range_test\\lora_nlg13-01-2021.csv",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 890,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "72922b09.cc5ad4",
+        "type": "function",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "func": "msg.payload = msg.gps_data +','+msg.uplink.rxInfo[0].rssi+','+msg.uplink.rxInfo[0].loRaSNR+','+msg.uplink.rxInfo[0].time;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 520,
+        "y": 380,
+        "wires": [
+            [
+                "9ce8a59b.1c1808"
+            ]
+        ]
+    },
+    {
+        "id": "df3c4f6.b3b60b",
+        "type": "debug",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "uplink",
+        "targetType": "msg",
+        "x": 830,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "6f28bf4e.2490c",
+        "type": "worldmap-tracks",
+        "z": "9c90e1ff.4d0ab",
+        "name": "LoRaWAN_TEST_GIG",
+        "depth": "1001",
+        "layer": "combined",
+        "x": 680,
+        "y": 80,
+        "wires": [
+            [
+                "4caa750a.7ee66c",
+                "7ff47e37.c9aff"
+            ]
+        ]
+    },
+    {
+        "id": "374da14f.f5bace",
+        "type": "function",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "func": "msg.payload = {\"name\":\"LoRa_Test_gig\", \"lat\":51.05, \"lon\":-1.35,\"speed\":0.2,\"track\":true,\"icon\":\"fa-paper-plane-o\",\"color\":\"blue\",\"iconColor\": \"blue\"};\nvar str = msg.only_gps;\nvar data = str.split(',');\nmsg.payload.lat = parseFloat(data[0]);\nmsg.payload.lon = parseFloat(data[1]);\nmsg.payload.speed = parseFloat(data[2]);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 620,
+        "y": 160,
+        "wires": [
+            [
+                "6f28bf4e.2490c",
+                "4caa750a.7ee66c",
+                "9aa88538.fc2228"
+            ]
+        ]
+    },
+    {
+        "id": "dcf34e08.c206e",
+        "type": "debug",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1010,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "4caa750a.7ee66c",
+        "type": "worldmap",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "lat": "17.0705568",
+        "lon": "79.262103",
+        "zoom": "16",
+        "layer": "OSM",
+        "cluster": "13",
+        "maxage": "4800",
+        "usermenu": "show",
+        "layers": "show",
+        "panit": "false",
+        "panlock": "false",
+        "zoomlock": "false",
+        "hiderightclick": "false",
+        "coords": "deg",
+        "showgrid": "false",
+        "allowFileDrop": "true",
+        "path": "/worldmap",
+        "x": 960,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "9aa88538.fc2228",
+        "type": "function",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "func": "msg.payload = {\"name\":\"GATEWAY\", \"lat\":17.0705735, \"lon\":79.26204,\"speed\":0,\"icon\":\"fa-wifi\"};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 780,
+        "y": 220,
+        "wires": [
+            [
+                "4caa750a.7ee66c"
+            ]
+        ]
+    },
+    {
+        "id": "8d0e16b.4fa56e8",
+        "type": "inject",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 440,
+        "y": 140,
+        "wires": [
+            [
+                "9aa88538.fc2228"
+            ]
+        ]
+    },
+    {
+        "id": "c3599915.053f78",
+        "type": "link in",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "links": [
+            "1ab9f2b4.b5264d"
+        ],
+        "x": 480,
+        "y": 80,
+        "wires": [
+            [
+                "4caa750a.7ee66c",
+                "1c9fa1ed.63835e"
+            ]
+        ]
+    },
+    {
+        "id": "1c9fa1ed.63835e",
+        "type": "worldmap-tracks",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "depth": "5000",
+        "layer": "single",
+        "x": 710,
+        "y": 20,
+        "wires": [
+            [
+                "4caa750a.7ee66c"
+            ]
+        ]
+    },
+    {
+        "id": "7ff47e37.c9aff",
+        "type": "function",
+        "z": "9c90e1ff.4d0ab",
+        "name": "",
+        "func": "msg.payload= (msg.payload.line).length;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 970,
+        "y": 160,
+        "wires": [
+            [
+                "dcf34e08.c206e"
+            ]
+        ]
+    },
+    {
+        "id": "d840887e.1530f",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "lora_rangetest",
+        "broker": "xx.xx.xx.xx",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "msg.payload",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    }
+]
